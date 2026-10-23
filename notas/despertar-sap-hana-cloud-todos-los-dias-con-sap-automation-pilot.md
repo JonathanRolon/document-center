@@ -1,6 +1,6 @@
 ---
 titulo: "Despertar SAP HANA Cloud todos los días con SAP Automation Pilot"
-resumen: "La instancia trial/free tier de HANA Cloud se apaga cada noche. Cómo arrancarla (y las apps de CF que dependen de ella) con un comando propio de Automation Pilot, y las trampas que no dice el tutorial."
+resumen: "La instancia trial/free tier de HANA Cloud se apaga cada noche. Cómo arrancarla con un comando propio y una ejecución programada de Automation Pilot, y las trampas que no dice el tutorial."
 tags: ["sap-btp", "automation-pilot", "hana-cloud", "cloud-foundry"]
 creado: 2026-10-23T04:07:00.989Z
 publicado: 2026-10-23T04:07:38.553Z
@@ -26,6 +26,10 @@ Un servicio de BTP para automatizar tareas de operación con **comandos** (pasos
 
 Está disponible en la trial y tiene plan `free` en el free tier. Si lo activás en una cuenta de empresa, elegí explícitamente el plan **free** en *Entitlements* (el `standard` se cobra por uso).
 
+Después de suscribirte, asignate una de sus role collections en la subaccount (*Security → Role Collections*). `AutomationPilot_Developer` alcanza para crear catálogos, inputs y comandos; `AutomationPilot_Admin` suma lo relacionado con seguridad.
+
+![Role collections de Automation Pilot](imagenes/automation-pilot/role-collections.png)
+
 ## Paso 1: un usuario técnico
 
 Los comandos se autentican contra Cloud Foundry con usuario y contraseña (password grant), así que:
@@ -43,8 +47,13 @@ cf set-space-role <usuario> <org> <space> SpaceDeveloper
 
 En Automation Pilot:
 
-1. **My Catalogs → Create**: un catálogo propio (por ejemplo `HanaWaker`).
-2. **Inputs → Create**, dos inputs:
+1. **Catalogs → Create**: un catálogo propio (por ejemplo `HanaWaker`). Los de SAP aparecen como *Provided*; el tuyo, como *Custom*.
+
+   ![Catálogo propio en Automation Pilot](imagenes/automation-pilot/catalogo.png)
+
+2. **Inputs → Create**, dos inputs dentro de ese catálogo:
+
+   ![Inputs del catálogo](imagenes/automation-pilot/inputs.png)
 
 **`CFInstanceDetails`** (dónde está la instancia):
 
@@ -55,19 +64,25 @@ En Automation Pilot:
 | `resourceGroup` | `dev` | El **space**. |
 | `resourceName` | `dev-hana` | Nombre de la instancia de HANA Cloud. |
 
+![Input CFInstanceDetails](imagenes/automation-pilot/input-cfinstancedetails.png)
+
 **`CFTechnicalUser`** (credenciales):
 
 | Clave | Valor | Nota |
 |---|---|---|
 | `user` | `<usuario técnico>` | |
-| `password` | `<contraseña>` | Marcala como **Sensitive**. |
+| `password` | `<contraseña>` | Marcala como **Sensitive**: no se vuelve a mostrar. |
+
+![Input CFTechnicalUser, con la contraseña sensible](imagenes/automation-pilot/input-cftechnicaluser.png)
 
 ## Paso 3: el comando
 
 **Commands → Create** en tu catálogo (por ejemplo `CFStartHC`):
 
-- **Input keys:** `CFInstanceDetails` y `CFUser`, de tipo **object**.
+- **Input keys:** `CFInstanceDetails` y `CFUser`, de tipo **object**, con los inputs del paso 2 como valor por defecto.
 - **Executor** (por ejemplo `CFInitiateDB`) con el comando de SAP **`hanacloud-sapcp:StartHanaCloudInstance:1`**.
+
+![Comando CFStartHC: input keys y executor](imagenes/automation-pilot/comando.png)
 
 > El tutorial de developers.sap.com usa `dblm-sapcp`, que está **deprecado**, y una sintaxis de expresiones vieja. Usá `hanacloud-sapcp`.
 
@@ -75,15 +90,19 @@ Parámetros del executor:
 
 | Parámetro | Valor |
 |---|---|
+| `environmentType` | `Cloud Foundry` |
+| `instanceId` | `$(.execution.input.CFInstanceDetails.resourceName)` |
 | `region` | `$(.execution.input.CFInstanceDetails.region)` |
-| `subAccount` / `org` | `$(.execution.input.CFInstanceDetails.subAccount)` |
-| `resourceGroup` / `space` | `$(.execution.input.CFInstanceDetails.resourceGroup)` |
-| `instanceId` / `resourceName` | `$(.execution.input.CFInstanceDetails.resourceName)` |
+| `org` | `$(.execution.input.CFInstanceDetails.subAccount)` |
+| `space` | `$(.execution.input.CFInstanceDetails.resourceGroup)` |
 | `user` | `$(.execution.input.CFUser.user)` |
 | `password` | `$(.execution.input.CFUser.password)` |
-| `environmentType` | `Cloud Foundry` |
 | `identityProvider` | `sap.ids` (o el origin de tu IdP) |
 | `deadline` | `30` (minutos que espera a que termine el arranque) |
+| `subAccountId` | el ID (GUID) de la subaccount |
+| `serviceKey` | vacío (se usa usuario y contraseña) |
+
+![Parámetros del executor CFInitiateDB](imagenes/automation-pilot/executor.png)
 
 ## Las trampas
 
@@ -101,7 +120,9 @@ y, si arreglás ese, el siguiente:
 provide either 'user' + 'password' or 'refreshToken'
 ```
 
-La forma de verlo es el **Expression Playground**: en *Command for Sample Input* cargá tu comando y mirá el *Input Data*. Los inputs no están en la raíz del contexto sino adentro de `execution.input`:
+La forma de verlo es el **Expression Playground**: en *Command for Sample Input* tocá **Load**, elegí tu comando y mirá el *Input Data*. Los inputs no están en la raíz del contexto sino adentro de `execution.input`:
+
+![Expression Playground con el Input Data de ejemplo del comando](imagenes/automation-pilot/expression-playground.png)
 
 ```json
 {
@@ -130,9 +151,13 @@ Elegir `cf-us10` cuando tu cuenta está en `us10-001` apunta a otro landscape.
 
 ### 3. La ejecución "tarda": está bien
 
-El comando manda el arranque y **espera a que HANA termine de arrancar** (hasta `deadline`). En mi caso tardó unos 5 minutos en pasar a *Finished*, con la instancia en *Running*.
+El comando manda el arranque y **espera a que HANA termine de arrancar** (hasta `deadline`). En mis corridas tardó entre 4 y 8 minutos en pasar a *Finished*, con la instancia en *Running*. Las que fallan por expresiones mal armadas, en cambio, mueren en un segundo:
 
-## Paso 4 (opcional): arrancar también las apps
+![Historial de ejecuciones: fallidas en 1 s, exitosas en minutos](imagenes/automation-pilot/ejecuciones.png)
+
+## Paso 4 (opcional, sin probar): arrancar también las apps
+
+> Esto lo armé leyendo el contrato del comando y el ejemplo oficial de SAP, pero **todavía no lo probé**: mi comando tiene solo el paso de HANA.
 
 Si tus apps de CF también se frenan de noche, se agregan al mismo comando, **después** del paso de HANA. Así arrancan cuando la base ya está lista y no fallan al conectarse.
 
@@ -154,12 +179,18 @@ Orden: **HANA → backends (`-srv`) → front-ends / approuter**.
 
 ## Paso 5: programarlo
 
-**Scheduled Executions → Create**, con tu comando y los dos inputs, todos los días antes de empezar a trabajar (por ejemplo 06:00 de Buenos Aires = 09:00 UTC si solo acepta UTC).
+**Scheduled Executions → Create**, con tu comando y los dos inputs. El formulario deja elegir la **zona horaria** (por ejemplo `America/Argentina/Buenos_Aires`), así que no hace falta convertir a UTC.
+
+Para probarlo, primero hice una programación **Once** unos minutos más tarde; corrió sola y terminó en *COMPLETED*:
+
+![Ejecución programada: Once, con zona horaria de Buenos Aires](imagenes/automation-pilot/ejecucion-programada.png)
+
+En el historial de ejecuciones, las que lanzó la programación figuran con *Started By* = **Schedule**. Con eso funcionando, la dejás recurrente, todos los días antes de empezar a trabajar.
 
 ## Resumen
 
 - Trial/free tier: HANA **y** las apps de CF se apagan de noche → un cron dentro de CF no sirve.
-- Automation Pilot corre afuera: comando propio con `hanacloud-sapcp:StartHanaCloudInstance:1` + `applm-sapcp:StartCfApp:1`.
+- Automation Pilot corre afuera: comando propio con `hanacloud-sapcp:StartHanaCloudInstance:1` (y, opcionalmente, `applm-sapcp:StartCfApp:1` para las apps).
 - Expresiones con **`$(.execution.input.<input>.<clave>)`**, `region` = landscape de CF (`cf-us10-001`), y el Expression Playground para depurar.
 
 ## Referencias

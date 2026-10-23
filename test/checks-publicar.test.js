@@ -27,6 +27,7 @@ test('credenciales en el contenido, con línea', () => {
     `ghp_${'a'.repeat(36)}`,
     'xoxb-1234567890-abcdef',
     'password = "SuperSecreto123"',
+    JSON.stringify({ cuerpo: '{"clientsecret": "a1B2c3D4e5F6g7H8"}' }),
     `eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.${'s'.repeat(20)}`
   ]) {
     assert.equal(motivos([{ ruta: 'x.js', contenido }]).length, 1, contenido);

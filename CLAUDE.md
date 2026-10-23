@@ -35,33 +35,53 @@ Reusa front y diseño de `../Portal Tecnico` (versión anterior en SAP BTP), per
   ---
   ```
 
-- Publicar desde el editor = mover de `borradores/` a `notas/` y setear `publicado`.
-- Tags: minúsculas, espacios → `-`.
+- Publicar desde el editor = mover de `borradores/` a `notas/` y setear `publicado`. Despublicar = al revés.
+- Un borrador renombra su archivo si cambia el título; una nota publicada **conserva el slug** (no romper links).
+- Tags: minúsculas, espacios → `-`, máx. 10.
 
 ## Estructura
 
-Se detalla en el plan del Paso 2. A grandes rasgos:
-
 ```
 document-center/
-├─ notas/          # .md públicos (versionados)
-├─ borradores/     # .md privados (git-ignorados)
-├─ src/            # front React (modo editor y modo lectura)
-├─ server/         # Express del editor local
-├─ scripts/        # build de contenido, publicar, migrar respaldo
-├─ public/fonts/72 # fuentes 72/72Mono + LICENSE (Apache-2.0)
-└─ test/           # node --test
+├─ notas/               # .md públicos (versionados)
+├─ borradores/          # .md privados (git-ignorados)
+├─ lib/                 # lógica sin React, compartida por front, server y scripts
+│  ├─ front-matter.js   # parsear/serializar el subconjunto fijo de YAML
+│  ├─ slug.js, tags.js, busqueda.js, checks-publicar.js, migrar.js
+│  └─ archivos.js       # repositorio sobre notas/ y borradores/ (usa fs: no entra al front)
+├─ src/                 # front React
+│  ├─ fuente.js         # EDITOR → api/*; público → datos/*.json
+│  ├─ notas.js          # índice + filtros (búsqueda en el navegador)
+│  ├─ components/, pages/ (EditarNota solo en el editor)
+│  └─ fonts/72/         # woff2 (los importa styles.css)
+├─ public/              # .nojekyll + fonts/72/LICENSE.txt y README.txt (Apache-2.0)
+├─ server/editor.js     # Express (API) + Vite en modo middleware, 127.0.0.1:4004
+├─ scripts/
+│  ├─ generar-datos.js  # notas/ publicadas → dist/datos/indice.json + datos/notas/<slug>.json
+│  ├─ publicar.js       # checks → build → git worktree .publicar/ en gh-pages → push
+│  └─ migrar-respaldo.js
+└─ test/                # node --test
 ```
+
+- Modo editor = `vite --mode editor`. Para que el build público descarte código del editor, la condición
+  tiene que ser `import.meta.env.MODE === 'editor'` **inline** (Rolldown no propaga la constante
+  `EDITOR` importada de otro módulo).
+- `react-router` fijado en v7 (igual que el proyecto anterior); la v8 es un cambio mayor.
 
 ## Comandos
 
 ```sh
 npm install
-npm run editar          # editor local: Express en 127.0.0.1 + Vite dev
-npm run previsualizar   # build del sitio público y preview local
-npm run publicar        # checks de seguridad + build + push a gh-pages
-npm test                # node --test
+npm run editar                   # editor local en http://127.0.0.1:4004/
+npm run previsualizar            # build del sitio público + vite preview
+npm run publicar -- --prueba     # build + checks, sin tocar git
+npm run publicar                 # checks + build + commit en gh-pages + push a origin
+npm run migrar -- respaldo.json  # respaldo del proyecto anterior → notas/ y borradores/
+npm test                         # node --test
 ```
+
+`publicar` exige que `notas/` esté commiteado (el historial del sitio es el de git). Primera vez en GitHub:
+Settings → Pages → Source "Deploy from a branch" → `gh-pages` / `(root)`.
 
 ## Seguridad (repo público)
 

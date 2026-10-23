@@ -38,6 +38,10 @@ Reusa front y diseño de `../Portal Tecnico` (versión anterior en SAP BTP), per
 - Publicar desde el editor = mover de `borradores/` a `notas/` y setear `publicado`. Despublicar = al revés.
 - Un borrador renombra su archivo si cambia el título; una nota publicada **conserva el slug** (no romper links).
 - Tags: minúsculas, espacios → `-`, máx. 10.
+- Imágenes: `![alt](imagenes/<carpeta>/<archivo>.png)`, con el archivo en `borradores/imagenes/<carpeta>/`
+  (git-ignorada). Publicar mueve las que usa la nota a `notas/imagenes/`; el build copia solo las de notas
+  publicadas y falla si falta alguna. **Nunca en `public/`** (se publica todo). Revisar que las capturas
+  no muestren clientes, hosts, usuarios ni datos internos.
 
 ## Estructura
 

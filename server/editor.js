@@ -1,6 +1,7 @@
 // Editor local: API sobre los .md + Vite (modo "editor") en un solo proceso.
 // Sin login: escucha solo en 127.0.0.1 y rechaza pedidos de otros orígenes.
 import { createServer as crearHttp } from 'node:http';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import { createServer as crearVite } from 'vite';
@@ -66,6 +67,9 @@ api.delete('/notas/:slug', manejar((req) => repo.eliminar(req.params.slug)));
 api.use((req, res) => res.status(404).json({ error: 'Ruta inexistente' }));
 
 app.use('/api', api);
+
+// imágenes de borradores y de notas publicadas, en la misma ruta que en el sitio
+app.use('/imagenes', express.static(join(RAIZ, 'borradores', 'imagenes')), express.static(join(RAIZ, 'notas', 'imagenes')));
 
 const http = crearHttp(app);
 const vite = await crearVite({

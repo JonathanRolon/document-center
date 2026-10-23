@@ -3,6 +3,7 @@ titulo: "CAP: \"Acquiring client from pool timed out\" con un solo usuario"
 resumen: "Un servicio CAP Node.js sobre HANA Cloud empezó a responder 503 aunque casi no tenía tráfico. No era concurrencia: era una fuga de conexiones por un cds.tx() que nunca se cerraba."
 tags: ["sap-cap", "hana-cloud", "nodejs", "sap-btp", "troubleshooting"]
 creado: 2026-10-23T12:00:00.000Z
+publicado: 2026-10-23T04:45:27.606Z
 ---
 
 ## El síntoma

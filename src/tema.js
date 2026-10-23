@@ -12,14 +12,16 @@ export const TEMAS = {
 };
 
 const CLAVE = 'stacknotes.tema';
+// tema de quien entra por primera vez (o sin storage)
+const POR_DEFECTO = 'sap';
 const consulta = () => window.matchMedia('(prefers-color-scheme: dark)');
 
 function leerGuardado() {
   try {
     const guardado = localStorage.getItem(CLAVE);
-    return guardado in TEMAS ? guardado : 'sistema';
+    return guardado in TEMAS ? guardado : POR_DEFECTO;
   } catch {
-    return 'sistema';
+    return POR_DEFECTO;
   }
 }
 

@@ -3,7 +3,7 @@ titulo: "Despertar SAP HANA Cloud todos los días con SAP Automation Pilot"
 resumen: "La instancia trial/free tier de HANA Cloud se apaga cada noche. Cómo arrancarla con un comando propio y una ejecución programada de Automation Pilot, y las trampas que no dice el tutorial."
 tags: ["sap-btp", "automation-pilot", "hana-cloud", "cloud-foundry"]
 creado: 2026-10-23T04:07:00.989Z
-publicado: 2026-10-23T04:07:38.553Z
+publicado: 2026-10-23T15:45:14.591Z
 ---
 
 ## El problema

@@ -1,0 +1,23 @@
+# Dependencias y builds
+node_modules/
+dist/
+.publicar/
+
+# Borradores: nunca se publican ni se suben
+borradores/
+
+# Entorno y credenciales
+.env
+.env.*
+default-env*.json
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+
+# Sistema / editor
+.DS_Store
+Thumbs.db
+*.log

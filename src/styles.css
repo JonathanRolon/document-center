@@ -234,6 +234,11 @@ h1 { font-size: 2.25rem; line-height: 1.2; margin: 0.5rem 0; letter-spacing: -0.
 .tag .cantidad { opacity: 0.7; }
 .tag button { font: inherit; border: none; background: none; color: inherit; cursor: pointer; padding: 0; }
 .nube-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; padding: 0 0.25rem; }
+.ver-mas-tags {
+  font: inherit; font-size: 0.8rem; border: none; background: none; padding: 0.15rem 0.4rem;
+  color: var(--texto-suave); cursor: pointer; text-decoration: underline;
+}
+.ver-mas-tags:hover { color: var(--primario); }
 .sidebar .etiqueta { padding: 0 0.5rem; margin: 0.25rem 0; }
 .filtros-activos { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; color: var(--texto-suave); }
 

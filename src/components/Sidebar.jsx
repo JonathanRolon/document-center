@@ -1,11 +1,21 @@
+import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router';
 import { EDITOR } from '../fuente.js';
 import { useNotas } from '../notas.js';
 import MenuAjustes from './MenuAjustes.jsx';
 
+// Tags visibles con la nube contraída (los más usados; el activo se muestra siempre)
+const TAGS_VISIBLES = 6;
+
 export default function Sidebar() {
   const { data: notas, error, tags, filtros, setFiltros } = useNotas();
   const navigate = useNavigate();
+  const [todosLosTags, setTodosLosTags] = useState(false);
+
+  const ocultos = Math.max(tags.length - TAGS_VISIBLES, 0);
+  const tagsVisibles = todosLosTags
+    ? tags
+    : tags.filter((t, i) => i < TAGS_VISIBLES || t.tag === filtros.tag);
 
   const elegirTag = (tag) => {
     setFiltros({ ...filtros, tag: filtros.tag === tag ? '' : tag });
@@ -29,7 +39,7 @@ export default function Sidebar() {
         <section>
           <span className="etiqueta">Tags</span>
           <div className="nube-tags">
-            {tags.map(({ tag, cantidad }) => (
+            {tagsVisibles.map(({ tag, cantidad }) => (
               <button
                 key={tag}
                 type="button"
@@ -39,6 +49,16 @@ export default function Sidebar() {
                 #{tag} <span className="cantidad">{cantidad}</span>
               </button>
             ))}
+            {ocultos > 0 && (
+              <button
+                type="button"
+                className="ver-mas-tags"
+                aria-expanded={todosLosTags}
+                onClick={() => setTodosLosTags(!todosLosTags)}
+              >
+                {todosLosTags ? 'Ver menos' : `+${ocultos} más`}
+              </button>
+            )}
           </div>
         </section>
       )}

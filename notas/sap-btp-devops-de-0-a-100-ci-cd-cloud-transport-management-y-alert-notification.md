@@ -70,6 +70,8 @@ Una vez que se completa el merge hacia `main`, se dispara un webhook que le pega
 
 Debo contratar la suscripción al servicio y, luego de asignadas las role collections, ir al servicio.
 
+![CI/CD recién suscripto: Jobs, Repositories y Credentials](imagenes/sap-btp-cicd-ctm/cicd-inicio.png)
+
 ### Credenciales
 
 CI/CD usa cuatro tipos de credenciales. Con una de cada una alcanza para todos los repositorios:
@@ -83,6 +85,8 @@ CI/CD usa cuatro tipos de credenciales. Con una de cada una alcanza para todos l
 
 Se recomienda generar un **usuario técnico o de servicio** para Git y BTP, para evitar cambios en las credenciales cuando alguien se va o cambia su password.
 
+![Credencial de Git (Basic Authentication)](imagenes/sap-btp-cicd-ctm/cicd-credencial-git.png)
+
 Credencial de deploy a BTP:
 
 ![Credencial de deploy (Basic Authentication)](imagenes/sap-btp-cicd-ctm/cicd-credencial-deploy.png)
@@ -91,16 +95,32 @@ Credencial de deploy a BTP:
 
 Configurar el repositorio en CI/CD (*Repositories → Add*): URL de clonación y la credencial de Git. Con Bitbucket Cloud, además pide el **UUID** del repo.
 
+![Add Repository: nombre, clone URL y credencial](imagenes/sap-btp-cicd-ctm/cicd-repositorio.png)
+
+El UUID lo saco de *Repository details* en Bitbucket:
+
+![UUID del repo en Bitbucket](imagenes/sap-btp-cicd-ctm/bitbucket-uuid.png)
+
+![Webhook Event Receiver con el UUID](imagenes/sap-btp-cicd-ctm/cicd-repositorio-uuid.png)
+
 Cada repositorio dado de alta tiene su **Webhook Data**: la URL a la que le va a pegar el webhook desde el proveedor de Git. La URL varía por repositorio.
+
+![Webhook Data del repositorio](imagenes/sap-btp-cicd-ctm/cicd-webhook-data.png)
 
 ### Job
 
 Luego queda configurar el job, que dependerá de lo que queramos que realice:
 
+![Create Job: repositorio, rama y pipeline](imagenes/sap-btp-cicd-ctm/cicd-job-general.png)
+
 - **Build Tool:** siempre `mta` para Fiori, con la última versión de Java.
 - **Lint Check:** no lo prendemos, a menos que necesitemos evitar el build o deploy en caso de errores.
+
+![Stage Build: mta y Lint Check](imagenes/sap-btp-cicd-ctm/cicd-job-build.png)
 - **Additional Unit Tests:** si estamos laburando con tests automatizados, podemos prender esa opción.
 - **Malware Scan:** va siempre.
+
+![Unit tests y Malware Scan](imagenes/sap-btp-cicd-ctm/cicd-job-tests-scan.png)
 - **Acceptance:** ahora CF pide que esté prendido. Completar los datos de la subaccount destino y seleccionar la credencial de deploy:
 
 ![Acceptance: deploy al space de Cloud Foundry](imagenes/sap-btp-cicd-ctm/cicd-acceptance.png)
@@ -125,12 +145,18 @@ Un job por rama: el de DEV y el de QAS despliegan directo a su space; el de `mai
 
 ### Bitbucket Cloud
 
-En el repo, *Repository settings → Webhooks → Add webhook*, y pegar la URL del Webhook Data generada en CI/CD. También se puede generar un secret (guardarlo); en este caso CI/CD no lo necesitó, le bastó con las credenciales y el UUID del repositorio.
+En el repo, *Repository settings → Webhooks → Add webhook*, y pegar la URL del Webhook Data generada en CI/CD.
+
+![Webhook en Bitbucket](imagenes/sap-btp-cicd-ctm/bitbucket-webhooks.png) También se puede generar un secret (guardarlo); en este caso CI/CD no lo necesitó, le bastó con las credenciales y el UUID del repositorio.
 
 En el webhook seleccionamos qué acciones lanzarán el job. Idealmente, dos webhooks:
 
 - **Pull Request updated:** si tenemos el PR abierto, cada vez que se actualice, sube los cambios a testing. Debería apuntar a un job que solo haga el upload a QAS.
+
+![Trigger Pull request Updated](imagenes/sap-btp-cicd-ctm/bitbucket-trigger-pr-updated.png)
 - **Pull Request merged:** cada vez que el PR se mergea a la rama destino, se activa el job de productivo, que a su vez activa el deploy por CTM.
+
+![Trigger Pull request Merged](imagenes/sap-btp-cicd-ctm/bitbucket-trigger-pr-merged.png)
 
 En el proveedor de Git se puede ver el historial de requests al CI/CD (headers y body), útil para depurar.
 
@@ -143,6 +169,10 @@ En el proveedor de Git se puede ver el historial de requests al CI/CD (headers y
 - Cada hook apunta a la URL del Webhook Data del repositorio en CI/CD.
 - Usuario y contraseña: los de la credencial de tipo Webhook Secret de CI/CD (*Webhook client id* = `TOKEN`, *Webhook secret* = el secret generado). Son únicos para todos los webhooks.
 
+La credencial se crea en CI/CD con tipo **Webhook Secret** (*Generate*):
+
+![Credencial de tipo Webhook Secret](imagenes/sap-btp-cicd-ctm/cicd-credencial-webhook.png)
+
 Después, testear la conexión desde el mismo service hook (*Test*): tiene que responder OK y verse el request en CI/CD.
 
 > El webhook secret es una credencial: no lo pegues en documentación ni en tickets.
@@ -150,6 +180,10 @@ Después, testear la conexión desde el mismo service hook (*Test*): tiene que r
 ## 5. Primera corrida
 
 Desde BAS clono el repositorio, armo la rama del job (en este caso `develop`), hago un cambio de prueba y el push:
+
+![git clone en BAS](imagenes/sap-btp-cicd-ctm/bas-clone.png)
+
+![commit y push a develop](imagenes/sap-btp-cicd-ctm/bas-commit-push.png)
 
 ```sh
 git clone <url-del-repo>
@@ -185,6 +219,8 @@ También se podría utilizar un usuario registrado en el IdP de account.sap.com 
 
 Desde el IAS (*Users & Authorizations → User Management → Add*), al crearlo seleccionamos **Set initial password**, y luego desde las opciones del usuario seteamos *Status Mail Active*. Después intentamos loguearnos desde la URL del IAS para cambiar esa password inicial. Finalmente, una vez cambiada, ya estamos en condiciones de utilizarlo.
 
+![Add New User en IAS con Set initial password](imagenes/sap-btp-cicd-ctm/ias-nuevo-usuario.png)
+
 ## 7. Cloud Transport Management
 
 ![Nodos y rutas de CTM: DEV → TEST → PROD, cada nodo con su destination a una subcuenta](imagenes/sap-btp-cicd-ctm/ctm-landscape-ok.png)
@@ -199,6 +235,10 @@ Desde el IAS (*Users & Authorizations → User Management → Add*), al crearlo 
 CTM conviene tenerlo en una subcuenta propia (por ejemplo `CTS`), separada de DEV/QAS/PRD: ahí viven la instancia, sus destinations y la service key que usa CI/CD.
 
 Esas role collections son las básicas, pero no cubren la importación y exportación: si intentás importar solo con ellas, CTM avisa que falta un permiso. Para eso hay que generar una role collection custom (por ejemplo `ZAdministrator-CTM`) con los roles *Administrator*, *ExportOperator* e *ImportOperator* de la instancia de CTM, y asignarla al usuario.
+
+![Role collection custom para CTM](imagenes/sap-btp-cicd-ctm/ctm-role-collection.png)
+
+![Roles Administrator de la instancia de CTM](imagenes/sap-btp-cicd-ctm/ctm-roles.png)
 
 ### Destinations de deploy
 
@@ -272,15 +312,21 @@ Desde CTM configuramos cada nodo del landscape, comenzando por el de desarrollo:
 
 Luego seguimos con TEST (y PROD) de la misma forma, cada uno con su destination.
 
+![Nodo TEST con Forward Mode Manual](imagenes/sap-btp-cicd-ctm/ctm-nodo-test.png)
+
 ### Ruta
 
 Creamos una ruta de transporte desde desarrollo a testing (esto también se puede generar con el *Landscape Wizard*):
+
+![Transport Landscape Wizard](imagenes/sap-btp-cicd-ctm/ctm-landscape-wizard.png)
 
 ![Crear la ruta DEV → TEST](imagenes/sap-btp-cicd-ctm/ctm-ruta.png)
 
 ### Import
 
 Una vez que CI/CD desplegó la app y subió el `.mtar` al nodo DEV de CTM, deberíamos ver el transporte en estado *Initial*. Con **Import Selected** comienza la importación a la subcuenta y el posterior reenvío de la solicitud al nodo siguiente (TEST). Debería quedar en *Succeeded*, y en el nodo destino queda pendiente el import:
+
+![Import Selected en el nodo DEV](imagenes/sap-btp-cicd-ctm/ctm-import-dev.png)
 
 ![Cola de import del nodo TEST](imagenes/sap-btp-cicd-ctm/ctm-import-queue.png)
 
@@ -301,15 +347,29 @@ El manejo de la conexión debe realizarse desde ALM, y no desde la API de CTM: h
 Debo tener la instancia creada y luego ingresar a su cockpit (*Instances and Subscriptions → alert → Manage*).
 
 1. **Action** de tipo **Email**, con la dirección destino y, opcionalmente, un asunto y un template HTML. Llega un mail de confirmación: hay que seguir el link para que quede operativa.
+
+   ![Tipo de action: Email](imagenes/sap-btp-cicd-ctm/an-action-tipo.png)
+
+   ![Action de mail con template HTML](imagenes/sap-btp-cicd-ctm/an-action-mail.png)
+
+   ![Action confirmada y operativa](imagenes/sap-btp-cicd-ctm/an-action-confirmada.png)
 2. **Condition:** cuando la categoría incluya `NOTIFICATION` (*Condition*: `category` *Contains* `NOTIFICATION`). Adicionalmente se puede configurar otra que matchee la categoría `EXCEPTION`.
+
+   ![Condition: category contains NOTIFICATION](imagenes/sap-btp-cicd-ctm/an-condition.png)
 3. **Subscription:** une la action y la condition.
+
+   ![Subscription creada](imagenes/sap-btp-cicd-ctm/an-subscription.png)
 4. **Probar:** desde la subscription, *Send Test Event*, cambiando la categoría del JSON de ejemplo a `NOTIFICATION` para que tome la condición. Tiene que llegar el mail.
+
+   ![Send Test Event con category NOTIFICATION](imagenes/sap-btp-cicd-ctm/an-test-event.png)
 
 ### Notificación desde CI/CD ante un nuevo build
 
 1. Generar el destination que expone la documentación de CI/CD para Alert Notification.
 2. En CI/CD, *Credentials*: credencial de tipo **Service Key** con el JSON de la service key de la API de Alert Notification.
 3. Asignarla en el job, *Build Notification → Send Build Notifications via SAP Alert Notification*.
+
+![Build Notification en el job](imagenes/sap-btp-cicd-ctm/cicd-build-notification.png)
 
 ### Notificación desde CTM ante un nuevo deploy
 

@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" font-family="Segoe UI, Helvetica, Arial, sans-serif" role="img" aria-label="Flujo CI/CD: ramas DEV, QAS y main disparan jobs de CI/CD; main sube a CTM, que transporta DEV, TEST y PROD">
+  <defs>
+    <marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5b6b7c"/>
+    </marker>
+    <style>
+      .card{fill:#ffffff;stroke:#d5dde5;stroke-width:1.5}
+      .git{fill:#e8f1fb;stroke:#0a6ed1;stroke-width:2}
+      .job{fill:#eef7ee;stroke:#2b7d2b;stroke-width:2}
+      .res{fill:#f7f9fb;stroke:#9aa7b4;stroke-width:1.5}
+      .ctm{fill:#fff4e5;stroke:#e9730c;stroke-width:2}
+      .t{font-size:17px;font-weight:600;fill:#1d2d3e}
+      .s{font-size:13px;fill:#556b82}
+      .h{font-size:13px;font-weight:700;letter-spacing:.08em;fill:#556b82}
+      .l{stroke:#5b6b7c;stroke-width:2;fill:none}
+      .ld{stroke:#5b6b7c;stroke-width:2;fill:none;stroke-dasharray:6 5}
+      .lab{font-size:12px;fill:#556b82}
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="960" height="640" rx="14" class="card"/>
+
+  <text x="60" y="44" class="h">GIT · RAMAS PROTEGIDAS</text>
+  <text x="380" y="44" class="h">CI/CD · UN JOB POR RAMA</text>
+  <text x="690" y="44" class="h">RESULTADO</text>
+
+  <!-- feature -->
+  <rect x="60" y="62" width="200" height="44" rx="22" class="res"/>
+  <text x="160" y="89" text-anchor="middle" class="t" style="font-size:15px">feature/* · fix/*</text>
+  <path d="M160 106 V140" class="l" marker-end="url(#f)"/>
+  <text x="172" y="128" class="lab">PR + aprobación</text>
+
+  <!-- DEV -->
+  <rect x="60" y="144" width="200" height="60" rx="10" class="git"/>
+  <text x="160" y="181" text-anchor="middle" class="t">DEV</text>
+  <path d="M260 174 H372" class="l" marker-end="url(#f)"/>
+  <text x="316" y="166" text-anchor="middle" class="lab">webhook</text>
+  <rect x="380" y="144" width="220" height="60" rx="10" class="job"/>
+  <text x="490" y="170" text-anchor="middle" class="t">Job DEV</text>
+  <text x="490" y="190" text-anchor="middle" class="s">clone · build MTA · scan</text>
+  <path d="M600 174 H682" class="l" marker-end="url(#f)"/>
+  <rect x="690" y="144" width="210" height="60" rx="10" class="res"/>
+  <text x="795" y="170" text-anchor="middle" class="t">Deploy</text>
+  <text x="795" y="190" text-anchor="middle" class="s">space DEV</text>
+
+  <path d="M160 204 V238" class="l" marker-end="url(#f)"/>
+  <text x="172" y="226" class="lab">PR + aprobación</text>
+
+  <!-- QAS -->
+  <rect x="60" y="242" width="200" height="60" rx="10" class="git"/>
+  <text x="160" y="279" text-anchor="middle" class="t">QAS</text>
+  <path d="M260 272 H372" class="l" marker-end="url(#f)"/>
+  <text x="316" y="264" text-anchor="middle" class="lab">webhook</text>
+  <rect x="380" y="242" width="220" height="60" rx="10" class="job"/>
+  <text x="490" y="268" text-anchor="middle" class="t">Job QAS</text>
+  <text x="490" y="288" text-anchor="middle" class="s">clone · build MTA · scan</text>
+  <path d="M600 272 H682" class="l" marker-end="url(#f)"/>
+  <rect x="690" y="242" width="210" height="60" rx="10" class="res"/>
+  <text x="795" y="268" text-anchor="middle" class="t">Deploy</text>
+  <text x="795" y="288" text-anchor="middle" class="s">space QAS</text>
+
+  <path d="M160 302 V336" class="l" marker-end="url(#f)"/>
+  <text x="172" y="324" class="lab">PR + aprobación</text>
+
+  <!-- main -->
+  <rect x="60" y="340" width="200" height="60" rx="10" class="git"/>
+  <text x="160" y="377" text-anchor="middle" class="t">main</text>
+  <path d="M260 370 H372" class="l" marker-end="url(#f)"/>
+  <text x="316" y="362" text-anchor="middle" class="lab">webhook</text>
+  <rect x="380" y="340" width="220" height="60" rx="10" class="job"/>
+  <text x="490" y="366" text-anchor="middle" class="t">Job main</text>
+  <text x="490" y="386" text-anchor="middle" class="s">clone · build MTA · scan</text>
+  <path d="M600 370 H682" class="l" marker-end="url(#f)"/>
+  <rect x="690" y="340" width="210" height="60" rx="10" class="ctm"/>
+  <text x="795" y="366" text-anchor="middle" class="t">Upload a CTM</text>
+  <text x="795" y="386" text-anchor="middle" class="s">nodo DEV</text>
+
+  <!-- CTM -->
+  <path d="M795 400 V440 H480 V470" class="l" marker-end="url(#f)"/>
+  <rect x="40" y="476" width="880" height="140" rx="12" fill="#fffaf3" stroke="#f3c48f" stroke-width="1.5"/>
+  <text x="60" y="504" class="h">CLOUD TRANSPORT MANAGEMENT · IMPORT MANUAL EN CADA NODO</text>
+
+  <rect x="110" y="524" width="190" height="66" rx="10" class="ctm"/>
+  <text x="205" y="553" text-anchor="middle" class="t">DEV</text>
+  <text x="205" y="574" text-anchor="middle" class="s">subcuenta DEV</text>
+  <path d="M300 557 H377" class="l" marker-end="url(#f)"/>
+  <text x="339" y="549" text-anchor="middle" class="lab">ruta</text>
+
+  <rect x="385" y="524" width="190" height="66" rx="10" class="ctm"/>
+  <text x="480" y="553" text-anchor="middle" class="t">TEST</text>
+  <text x="480" y="574" text-anchor="middle" class="s">subcuenta TEST</text>
+  <path d="M575 557 H652" class="l" marker-end="url(#f)"/>
+  <text x="614" y="549" text-anchor="middle" class="lab">ruta</text>
+
+  <rect x="660" y="524" width="190" height="66" rx="10" class="ctm"/>
+  <text x="755" y="553" text-anchor="middle" class="t">PROD</text>
+  <text x="755" y="574" text-anchor="middle" class="s">subcuenta PROD</text>
+</svg>

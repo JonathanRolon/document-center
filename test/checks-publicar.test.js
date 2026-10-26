@@ -39,6 +39,7 @@ test('valores de ejemplo no frenan la publicación', () => {
     '"clientsecret": "<tu-secreto>"',
     'password: "xxxxxxxx"',
     "api_key = '${API_KEY}'",
+    'client_secret="$CLIENTSECRET"',
     '"password": "********"',
     'el campo password se configura en el destination'
   ]) {

@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#475569"/>
+    </marker>
+  </defs>
+  <rect width="960" height="560" rx="14" fill="#f8fafc"/>
+  <text x="480" y="38" text-anchor="middle" font-size="22" font-weight="700" fill="#0f172a">Arquitectura del agente de Órdenes de Compra</text>
+
+  <!-- Usuario -->
+  <rect x="30" y="215" width="170" height="90" rx="10" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+  <text x="115" y="250" text-anchor="middle" font-size="16" font-weight="700" fill="#0c4a6e">Usuario</text>
+  <text x="115" y="274" text-anchor="middle" font-size="13" fill="#0c4a6e">Comprador</text>
+  <text x="115" y="292" text-anchor="middle" font-size="13" fill="#0c4a6e">(pregunta en español)</text>
+
+  <!-- Agente -->
+  <rect x="290" y="150" width="240" height="220" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+  <text x="410" y="182" text-anchor="middle" font-size="16" font-weight="700" fill="#4c1d95">Agente Python</text>
+  <text x="410" y="202" text-anchor="middle" font-size="13" fill="#4c1d95">se expone por A2A</text>
+  <line x1="310" y1="216" x2="510" y2="216" stroke="#c4b5fd"/>
+  <text x="310" y="240" font-size="13" fill="#4c1d95">• System prompt (español)</text>
+  <text x="310" y="262" font-size="13" fill="#4c1d95">• Guardrails: solo lectura</text>
+  <text x="310" y="284" font-size="13" fill="#4c1d95">• Runtime skill:</text>
+  <text x="322" y="302" font-size="13" fill="#4c1d95">po-resolution-guidance</text>
+  <text x="310" y="324" font-size="13" fill="#4c1d95">• Logs de hitos M1…M5</text>
+  <text x="310" y="346" font-size="13" fill="#4c1d95">• Detector de prompt injection</text>
+
+  <!-- LLM -->
+  <rect x="620" y="60" width="310" height="90" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+  <text x="775" y="92" text-anchor="middle" font-size="16" font-weight="700" fill="#78350f">Generative AI Hub</text>
+  <text x="775" y="114" text-anchor="middle" font-size="13" fill="#78350f">Modelo LLM (en el código: Claude)</text>
+  <text x="775" y="132" text-anchor="middle" font-size="13" fill="#78350f">entiende la pregunta y decide qué tool usar</text>
+
+  <!-- MCP -->
+  <rect x="620" y="230" width="310" height="100" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="775" y="262" text-anchor="middle" font-size="16" font-weight="700" fill="#14532d">MCP server</text>
+  <text x="775" y="284" text-anchor="middle" font-size="13" fill="#14532d">47 tools (46 marcadas de solo lectura)</text>
+  <text x="775" y="302" text-anchor="middle" font-size="13" fill="#14532d">(traducción MCP de la API OData)</text>
+
+  <!-- S4 -->
+  <rect x="620" y="415" width="310" height="100" rx="10" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+  <text x="775" y="447" text-anchor="middle" font-size="16" font-weight="700" fill="#7f1d1d">SAP S/4HANA Cloud</text>
+  <text x="775" y="469" text-anchor="middle" font-size="13" fill="#7f1d1d">API OData CE_PURCHASEORDER_0001:v1</text>
+  <text x="775" y="487" text-anchor="middle" font-size="13" fill="#7f1d1d">órdenes de compra (datos reales)</text>
+
+  <!-- Flechas -->
+  <line x1="200" y1="250" x2="288" y2="250" stroke="#475569" stroke-width="2.5" marker-end="url(#a)"/>
+  <line x1="288" y1="275" x2="200" y2="275" stroke="#475569" stroke-width="2.5" marker-end="url(#a)"/>
+  <line x1="530" y1="180" x2="618" y2="115" stroke="#475569" stroke-width="2.5" marker-end="url(#a)" marker-start="url(#a)"/>
+  <line x1="530" y1="280" x2="618" y2="280" stroke="#475569" stroke-width="2.5" marker-end="url(#a)" marker-start="url(#a)"/>
+  <line x1="775" y1="330" x2="775" y2="413" stroke="#475569" stroke-width="2.5" marker-end="url(#a)" marker-start="url(#a)"/>
+
+  <!-- Números -->
+  <g font-size="14" font-weight="700" fill="#fff" text-anchor="middle">
+    <circle cx="244" cy="230" r="13" fill="#0f172a"/><text x="244" y="235">1</text>
+    <circle cx="574" cy="132" r="13" fill="#0f172a"/><text x="574" y="137">2</text>
+    <circle cx="574" cy="260" r="13" fill="#0f172a"/><text x="574" y="265">3</text>
+    <circle cx="797" cy="372" r="13" fill="#0f172a"/><text x="797" y="377">4</text>
+    <circle cx="244" cy="302" r="13" fill="#0f172a"/><text x="244" y="307">5</text>
+  </g>
+
+  <!-- Leyenda -->
+  <g font-size="13" fill="#0f172a">
+    <text x="30" y="420" font-weight="700">Cómo se lee</text>
+    <text x="30" y="444">1  El usuario pregunta por una OC.</text>
+    <text x="30" y="464">2  El agente consulta al LLM, que decide qué tool llamar.</text>
+    <text x="30" y="484">3  El agente llama al MCP server (la tool elegida).</text>
+    <text x="30" y="504">4  El MCP server hace un GET a la API OData de S/4HANA.</text>
+    <text x="30" y="524">5  El agente responde en español, con la acción recomendada.</text>
+  </g>
+</svg>

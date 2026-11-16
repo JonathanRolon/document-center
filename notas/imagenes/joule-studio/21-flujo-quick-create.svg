@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#475569"/>
+    </marker>
+  </defs>
+  <rect width="900" height="700" rx="14" fill="#f8fafc"/>
+  <text x="450" y="36" text-anchor="middle" font-size="22" font-weight="700" fill="#0f172a">Flujo del agente "Consulta Básica OC"</text>
+
+  <!-- Inicio -->
+  <rect x="300" y="60" width="300" height="50" rx="25" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+  <text x="450" y="90" text-anchor="middle" font-size="15" font-weight="700" fill="#0c4a6e">El comprador escribe (cualquier idioma)</text>
+
+  <!-- Decisión 1 -->
+  <polygon points="450,140 620,200 450,260 280,200" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+  <text x="450" y="196" text-anchor="middle" font-size="14" font-weight="700" fill="#4c1d95">¿Indicó el número</text>
+  <text x="450" y="216" text-anchor="middle" font-size="14" font-weight="700" fill="#4c1d95">de la OC?</text>
+
+  <!-- NO -->
+  <rect x="40" y="170" width="190" height="64" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+  <text x="135" y="196" text-anchor="middle" font-size="13" font-weight="700" fill="#78350f">Responde en español:</text>
+  <text x="135" y="216" text-anchor="middle" font-size="13" fill="#78350f">pide el número exacto</text>
+
+  <!-- Tool -->
+  <rect x="330" y="300" width="240" height="70" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="450" y="327" text-anchor="middle" font-size="14" font-weight="700" fill="#14532d">Tool get_purchase_order</text>
+  <text x="450" y="348" text-anchor="middle" font-size="13" fill="#14532d">GET a CE_PURCHASEORDER_0001</text>
+  <text x="450" y="364" text-anchor="middle" font-size="12" fill="#14532d">(solo lectura)</text>
+
+  <!-- Decisión 2 -->
+  <polygon points="450,400 620,460 450,520 280,460" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+  <text x="450" y="456" text-anchor="middle" font-size="14" font-weight="700" fill="#4c1d95">¿Existe la OC</text>
+  <text x="450" y="476" text-anchor="middle" font-size="14" font-weight="700" fill="#4c1d95">en S/4HANA?</text>
+
+  <!-- No existe -->
+  <rect x="40" y="430" width="190" height="64" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+  <text x="135" y="456" text-anchor="middle" font-size="13" font-weight="700" fill="#78350f">Responde en español:</text>
+  <text x="135" y="476" text-anchor="middle" font-size="13" fill="#78350f">no se encontró la OC</text>
+
+  <!-- Existe -->
+  <rect x="650" y="420" width="220" height="130" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="760" y="446" text-anchor="middle" font-size="13" font-weight="700" fill="#14532d">Responde en español con</text>
+  <text x="760" y="464" text-anchor="middle" font-size="13" font-weight="700" fill="#14532d">los 5 campos de cabecera:</text>
+  <text x="760" y="486" text-anchor="middle" font-size="12" fill="#14532d">estado · proveedor · fecha</text>
+  <text x="760" y="504" text-anchor="middle" font-size="12" fill="#14532d">de creación · moneda</text>
+  <text x="760" y="522" text-anchor="middle" font-size="12" fill="#14532d">importe neto total</text>
+
+  <!-- Flechas -->
+  <g stroke="#475569" stroke-width="2.5" fill="none" marker-end="url(#a)">
+    <line x1="450" y1="110" x2="450" y2="138"/>
+    <line x1="280" y1="200" x2="232" y2="200"/>
+    <line x1="450" y1="260" x2="450" y2="298"/>
+    <line x1="450" y1="370" x2="450" y2="398"/>
+    <line x1="280" y1="460" x2="232" y2="460"/>
+    <line x1="620" y1="460" x2="648" y2="460"/>
+  </g>
+  <g font-size="13" font-weight="700" fill="#0f172a">
+    <text x="236" y="190">No</text>
+    <text x="462" y="284">Sí</text>
+    <text x="236" y="450">No</text>
+    <text x="626" y="450">Sí</text>
+  </g>
+
+  <!-- Hitos -->
+  <rect x="40" y="580" width="830" height="90" rx="10" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="60" y="608" font-size="14" font-weight="700" fill="#0f172a">Hitos que registra en los logs</text>
+  <text x="60" y="632" font-size="13" fill="#0f172a">M1: el agente está desplegado y procesó una consulta   ·   M2: la tool devolvió los 5 campos de cabecera</text>
+  <text x="60" y="654" font-size="13" fill="#0f172a">M3: manejó un error en español (falta el número, o la OC no existe)</text>
+</svg>

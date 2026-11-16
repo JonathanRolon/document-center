@@ -281,6 +281,12 @@ h1 { font-size: 2.25rem; line-height: 1.2; margin: 0.5rem 0; letter-spacing: -0.
 .markdown th, .markdown td { border: 1px solid var(--borde); padding: 0.4rem 0.75rem; text-align: left; }
 .markdown th { background: var(--code); }
 .markdown blockquote { margin: 1rem 0; padding: 0.1rem 1rem; border-left: 3px solid var(--texto); }
+.markdown .aclaracion { margin: 1rem 0; border: 1px solid var(--borde); border-left: 3px solid #e0a800; border-radius: 6px; background: var(--code); }
+.markdown .aclaracion > summary { cursor: pointer; padding: 0.5rem 0.9rem; font-weight: 600; list-style-position: inside; }
+.markdown .aclaracion > summary:hover { background: var(--hover); }
+.markdown .aclaracion[open] > summary { border-bottom: 1px solid var(--borde); }
+.markdown .aclaracion-cuerpo { padding: 0.2rem 1rem 0.6rem; }
+.markdown .aclaracion-cuerpo .bloque-codigo { background: var(--fondo, transparent); }
 .markdown li:has(> input[type='checkbox']) { list-style: none; margin-left: -1.25rem; }
 .markdown hr { border: none; border-top: 1px solid var(--borde); margin: 2rem 0; }
 

@@ -1,3 +1,4 @@
+import { Children, isValidElement } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
@@ -19,7 +20,44 @@ function linkYoutubeSolo(node) {
   return video ? { video, href } : null;
 }
 
+// Texto plano de unos hijos de React (también dentro de `code`, énfasis, etc.)
+function textoDe(nodos) {
+  return Children.toArray(nodos)
+    .map((n) => (isValidElement(n) ? textoDe(n.props.children) : String(n)))
+    .join('');
+}
+
+// Cita que empieza con "💡 **Título.** texto" → aclaración plegable (<details>), cerrada por defecto.
+// Si la cita no tiene ese formato, queda como cita normal.
+function Aclaracion({ children }) {
+  const hijos = Children.toArray(children);
+  const i = hijos.findIndex((h) => isValidElement(h));
+  const parrafo = hijos[i];
+  const partes = parrafo ? Children.toArray(parrafo.props.children) : [];
+  const [marca, titulo] = partes;
+  const esAclaracion =
+    typeof marca === 'string' && marca.trim() === '💡' && isValidElement(titulo) && titulo.type === 'strong';
+  if (!esAclaracion) return <blockquote>{children}</blockquote>;
+
+  const texto = textoDe(titulo.props.children).replace(/\.\s*$/, '');
+  const resto = partes.slice(2);
+  if (typeof resto[0] === 'string') resto[0] = resto[0].replace(/^\s+/, '');
+  return (
+    <details className="aclaracion">
+      <summary>
+        <span aria-hidden="true">💡</span> {texto}
+      </summary>
+      <div className="aclaracion-cuerpo">
+        {resto.length > 0 && <p>{resto}</p>}
+        {hijos.slice(i + 1)}
+      </div>
+    </details>
+  );
+}
+
 const components = {
+  blockquote: Aclaracion,
+
   // un link de YouTube solo en su línea se embebe; un link dentro de un texto queda como link
   p({ node, children }) {
     const yt = linkYoutubeSolo(node);

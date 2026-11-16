@@ -40,7 +40,7 @@ Resumen propio de lo esencial del post de SAP Community [Free SAP Certified - Jo
 
 ### Los 4 tipos de solución
 
-| Tipo | Qué es | En tu práctica |
+| Tipo | Qué es | En la práctica |
 |---|---|---|
 | **Agent** | Agente propio con instrucciones, tools (APIs de SAP, MCP servers) y pasos opcionales con intervención humana. | Casos 1 y 2 |
 | **Agent Extension** | Suma capacidades a un agente que ya trae SAP, sin modificarlo ni reconstruirlo. | Caso 3 |
@@ -70,7 +70,7 @@ El ciclo de vida (*Idea Board*) tiene seis etapas: **Intent → Requirement (PRD
 
 El agente base se elige en el **Agent Catalog**, que lista los puntos de extensión que admite cada agente.
 
-> 💡 **Tu extensión usó solo instrucciones.** La del Journal Entry Agent agregó únicamente el primer tipo, por eso no tenía tools ni hooks. Un *hook* es un punto donde se engancha lógica antes o después de que el agente actúe. Ejemplo del tutorial oficial que cita el post: el agente AP Invoice, cuando no puede conciliar una factura, dispara un workflow n8n que crea una tarea en SAP Task Center. El patrón "agente estándar más hook hacia un workflow" agrega tu proceso sin copiar el agente de SAP.
+> 💡 **La extensión del Caso 3 usó solo instrucciones.** La del Journal Entry Agent agregó únicamente el primer tipo, por eso no tenía tools ni hooks. Un *hook* es un punto donde se engancha lógica antes o después de que el agente actúe. Ejemplo del tutorial oficial que cita el post: el agente AP Invoice, cuando no puede conciliar una factura, dispara un workflow n8n que crea una tarea en SAP Task Center. El patrón "agente estándar más hook hacia un workflow" agrega tu proceso sin copiar el agente de SAP.
 
 ### Buenas prácticas
 
